@@ -1,0 +1,23 @@
+#!/usr/bin/env bash
+
+# if there is no existing plotly environment, create it
+if [ ! -d "env-plotly" ]; then
+    # create a virtual environment for plotly installation
+	#virtualenv --system-site-packages env-plotly
+	virtualenv env-plotly
+
+	# activate it
+	source env-plotly/bin/activate
+
+	# install plotly
+	pip install plotly
+
+	# install ipython notebook
+	pip install ipython[all]
+
+# otherwise just run it
+else
+	source env-plotly/bin/activate
+fi
+
+
