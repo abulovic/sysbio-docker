@@ -1,0 +1,6 @@
+# SBML model files
+.xml
+
+# local folders
+models/
+output/
