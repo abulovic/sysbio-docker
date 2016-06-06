@@ -4,3 +4,6 @@
 # local folders
 models/
 output/
+
+# virtual environments
+env*
