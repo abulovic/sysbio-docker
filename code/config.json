@@ -1,0 +1,23 @@
+{
+	"integration": {
+		"start": 0,
+		"end": 100,
+		"stiff": true
+	},
+	"plotting": {
+		"timecourse": {
+			"plot-all": false,
+			"plot-groups": true,
+			"groups": {
+				"RP": {
+					"species": ["RP_weight", "IPTG"],
+					"vlines": [],
+					"hlines": []
+				},
+				"Growth proteins": {
+					"species": ["HKProtein", "Ribosome", "MetEnzyme", "Transporter"]
+				}
+			}
+		}
+	}
+}
