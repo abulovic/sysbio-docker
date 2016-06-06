@@ -14,3 +14,5 @@ RUN mkdir /tmp/antimony && \
  	cp -r antimony/doc/examples /usr/local/antimony && \
  	rm -r antimony && \
  	rm antimony_src_v2.8.tar.gz
+
+RUN pip install ipdb
