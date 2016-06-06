@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 
 DIR=`pwd`
+DIMAGE=abulovic/sysbio-docker
 
 if [ ! -d "$DIR/models" ]; then
   # Control will enter here if $DIRECTORY doesn't exist.
@@ -12,4 +13,4 @@ if [ ! -d "$DIR/output" ]; then
   mkdir $DIR/output
 fi
 
-docker run -ti -v $DIR/models/:/home/user/models -v $DIR/code/:/home/user/code -v $DIR/output/:/home/user/output sysbio
+docker run -ti -v $DIR/models/:/home/user/models -v $DIR/code/:/home/user/code -v $DIR/output/:/home/user/output $DIMAGE
