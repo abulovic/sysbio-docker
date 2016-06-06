@@ -17,4 +17,6 @@ RUN mkdir /tmp/antimony && \
 
 RUN pip install ipdb
 
+USER user
+
 WORKDIR /home/user
