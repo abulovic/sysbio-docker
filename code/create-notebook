@@ -10,7 +10,7 @@ from plotly.graph_objs import Scatter, Figure, Layout'''
 
 _setup = '''init_notebook_mode(connected=True)'''
 
-_ddir = 'data_dir = "../../%(ddir)s"'
+_ddir = 'data_dir = "../%(ddir)s"'
 
 _data_processing = '''figures = {}
 for fname in filter(lambda fname: fname.endswith('.txt'), os.listdir(data_dir)):
@@ -68,7 +68,7 @@ if __name__ == '__main__':
         notebook['cells'].append(nbv4.new_code_cell(_plot % {'title': fname}))
 
 
-    with io.open('output/plots/%(mname)s_%(mtime)s.ipynb' % {'mname': mname, 'mtime': mtime}, 'w', encoding='utf-8') as f:
+    with io.open('plots/%(mname)s_%(mtime)s.ipynb' % {'mname': mname, 'mtime': mtime}, 'w', encoding='utf-8') as f:
         f.write(nbv4.writes(notebook))
 
 

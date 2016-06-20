@@ -8,14 +8,14 @@ if [ ! -d "$DIR/models" ]; then
   mkdir $DIR/models
 fi
 
-if [ ! -d "$DIR/output" ]; then
+if [ ! -d "$DIR/sim-output" ]; then
   # Control will enter here if $DIRECTORY doesn't exist.
-  mkdir $DIR/output
+  mkdir $DIR/sim-output
 fi
 
-if [ ! -d "$DIR/output/plots" ]; then
+if [ ! -d "$DIR/plots" ]; then
   # Control will enter here if $DIRECTORY doesn't exist.
-  mkdir $DIR/output/plots
+  mkdir $DIR/plots
 fi
 
-docker run -ti -v $DIR/models/:/home/user/models -v $DIR/code/:/home/user/code -v $DIR/output/:/home/user/output $DIMAGE
+docker run -ti -v $DIR/models/:/home/sysbio/models -v $DIR/code/:/home/sysbio/code -v $DIR/sim-output/:/home/sysbio/sim-output $DIMAGE

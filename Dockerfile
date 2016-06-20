@@ -1,5 +1,7 @@
 FROM stanleygu/roadrunner
 
+ARG UID
+
 # Install Vim
 RUN apt-get install -y vim
 
@@ -17,6 +19,10 @@ RUN mkdir /tmp/antimony && \
 
 RUN pip install ipdb
 
-USER user
+RUN userdel user
 
-WORKDIR /home/user
+RUN useradd --shell=/bin/bash --create-home --home-dir=/home/sysbio --uid $UID sysbio
+
+USER sysbio
+
+WORKDIR /home/sysbio
