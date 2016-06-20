@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 import io
-from IPython.nbformat import current
+import nbformat.v4 as nbv4
 
 _imports = '''import os, sys
 from plotly.offline import download_plotlyjs, init_notebook_mode, plot, iplot
@@ -10,7 +10,7 @@ from plotly.graph_objs import Scatter, Figure, Layout'''
 
 _setup = '''init_notebook_mode(connected=True)'''
 
-_ddir = 'data_dir = "../../../%(ddir)s"'
+_ddir = 'data_dir = "../../%(ddir)s"'
 
 _data_processing = '''figures = {}
 for fname in filter(lambda fname: fname.endswith('.txt'), os.listdir(data_dir)):
@@ -41,6 +41,11 @@ iplot({
 if __name__ == '__main__':
     import os, sys
     ddir = sys.argv[-1]
+    dirs = ddir.split(os.path.sep)
+    if dirs[-1] == '':
+        dirs.pop()
+    mtime = dirs[-1]
+    mname = dirs[-2]
     figures = {}
     for fname in filter(lambda fname: fname.endswith('.txt'), os.listdir(ddir)):
         title = fname[:-4]
@@ -52,17 +57,18 @@ if __name__ == '__main__':
                 timecourses[data[0]] = [float(val) for val in data[1:]]
             figures[title] = timecourses
     
-    notebook = current.reads('', format='py')
-    notebook['worksheets'][0]['cells'].append(current.new_code_cell(_imports))
-    notebook['worksheets'][0]['cells'].append(current.new_code_cell(_setup))
-    notebook['worksheets'][0]['cells'].append(current.new_code_cell(_ddir % {'ddir': ddir}))
-    notebook['worksheets'][0]['cells'].append(current.new_code_cell(_data_processing))
+    notebook = nbv4.new_notebook()
+    notebook
+    notebook['cells'].append(nbv4.new_code_cell(_imports))
+    notebook['cells'].append(nbv4.new_code_cell(_setup))
+    notebook['cells'].append(nbv4.new_code_cell(_ddir % {'ddir': ddir}))
+    notebook['cells'].append(nbv4.new_code_cell(_data_processing))
 
     for fname in figures:
-        notebook['worksheets'][0]['cells'].append(current.new_code_cell(_plot % {'title': fname}))
+        notebook['cells'].append(nbv4.new_code_cell(_plot % {'title': fname}))
 
 
-    with io.open('%s/plotter.ipynb' % ddir, 'w', encoding='utf-8') as f:
-        current.write(notebook, f, format='ipynb')
+    with io.open('output/plots/%(mname)s_%(mtime)s.ipynb' % {'mname': mname, 'mtime': mtime}, 'w', encoding='utf-8') as f:
+        f.write(nbv4.writes(notebook))
 
 
