@@ -9,13 +9,13 @@
 			"plot-all": false,
 			"plot-groups": true,
 			"groups": {
-				"RP": {
-					"species": ["RP_weight", "IPTG"],
+				"CM-plot": {
+					"species": ["C", "M"],
 					"vlines": [],
 					"hlines": []
 				},
-				"Growth proteins": {
-					"species": ["HKProtein", "Ribosome", "MetEnzyme", "Transporter"]
+				"X": {
+					"species": ["X"]
 				}
 			}
 		}
