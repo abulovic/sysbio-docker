@@ -1,7 +1,10 @@
 #!/usr/bin/env python
 
+import os
 import io
 import nbformat.v4 as nbv4
+from argparse import ArgumentParser
+
 
 _imports = '''import os, sys
 from plotly.offline import download_plotlyjs, init_notebook_mode, plot, iplot
@@ -38,16 +41,23 @@ iplot({
     })
 '''
 
+def get_parser():
+    parser = ArgumentParser()
+    parser.add_argument("NAME", help="Name of the IPython notebook with plots")
+    parser.add_argument("--ts", help='Timestamp the Ipython notebook name', action='store_true')
+    return parser
+
+
 if __name__ == '__main__':
-    import os, sys
-    ddir = sys.argv[-1]
-    dirs = ddir.split(os.path.sep)
-    if dirs[-1] == '':
-        dirs.pop()
-    mtime = dirs[-1]
-    mname = dirs[-2]
+
+    parser = get_parser()
+    args = parser.parse_args()
+    notebook_name = args.NAME
+    timestamp = args.ts
+
+    ddir = './sim-output'
     figures = {}
-    for fname in filter(lambda fname: fname.endswith('.txt'), os.listdir(ddir)):
+    for fname in filter(lambda fname: fname.endswith('.txt'), os.listdir('./sim-output')):
         title = fname[:-4]
         timecourses = {}
         full_fname = '%s/%s' % (ddir, fname)
@@ -68,7 +78,7 @@ if __name__ == '__main__':
         notebook['cells'].append(nbv4.new_code_cell(_plot % {'title': fname}))
 
 
-    with io.open('plots/%(mname)s_%(mtime)s.ipynb' % {'mname': mname, 'mtime': mtime}, 'w', encoding='utf-8') as f:
+    with io.open('./plots/%(name)s.ipynb' % {'name': notebook_name}, 'w', encoding='utf-8') as f:
         f.write(nbv4.writes(notebook))
 
 
