@@ -26,9 +26,9 @@ def main():
 	models_dir = os.path.abspath(models_dir)
 
 	cfg_arg = ''
-	cfg_fname = '%s.cfg' % model_fname
+	cfg_fname = './models/%s.cfg' % (model_fname, )
 	if os.path.isfile(cfg_fname):
-		cfg_arg = '--cfg ./models/%s' % cfg_fname
+		cfg_arg = '--cfg %s' % cfg_fname
 
 	odir_arg = '--odir ./sim-output'
 
