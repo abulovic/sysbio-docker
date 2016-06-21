@@ -74,12 +74,12 @@ def get_timecourse(result, species, name):
 	return result[:, species.index(name)]
 
 def export_sim(cfg, result, out_dir):
-	model_dir = os.path.sep.join([out_dir, cfg.model.getModelName()])
+	model_dir = os.path.sep.join([out_dir, cfg.model.getModelName().replace(' ', '_')])
 	if not os.path.isdir(model_dir):
 		os.makedirs(model_dir)
-	now = dtime.isoformat(dtime.now())
-	cpath = os.path.sep.join([model_dir, now])
-	os.makedirs(cpath)
+	cpath = model_dir
+	if not os.path.isdir(cpath):
+		os.makedirs(cpath)
 
 	print 'Results stored to: ', cpath
 
