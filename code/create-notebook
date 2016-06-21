@@ -1,0 +1,80 @@
+#!/usr/bin/env python
+
+import os
+import io
+import subprocess
+import nbformat.v4 as nbv4
+from argparse import ArgumentParser
+
+
+_imports = '''import os, sys
+from plotly.offline import download_plotlyjs, init_notebook_mode, plot, iplot
+
+from plotly.graph_objs import Scatter, Figure, Layout'''
+
+_setup = '''init_notebook_mode(connected=True)'''
+
+_ddir = 'data_dir = "../%(ddir)s"'
+
+_data_processing = '''figures = {}
+for fname in filter(lambda fname: fname.endswith('.txt'), os.listdir(data_dir)):
+    title = fname[:-4]
+    timecourses = {}
+    full_fname = '%s/%s' % (data_dir, fname)
+    with open(full_fname) as fin:
+        for line in fin:
+            data = line.strip().split(';')
+            timecourses[data[0]] = [float(val) for val in data[1:]]
+        figures[title] = timecourses
+'''
+
+_plot = '''layout = Layout(title='%(title)s')
+traces = []
+_data = figures['%(title)s']
+for name, val in _data.iteritems():
+    if name == 'time':
+        continue
+    else:
+        traces.append(Scatter(x=_data['time'], y=_data[name], name=name))
+iplot({
+    'data': traces,
+    'layout': layout
+    })
+'''
+
+def get_parser():
+    parser = ArgumentParser()
+    parser.add_argument("RESULT_DIR", help="Directory with comma-separated values of simulation in .txt files")
+    parser.add_argument("PLOT_DIR", help="Directory where to store IPython notebook with plots")
+    parser.add_argument("NAME", help="Name of the IPython notebook with plots")
+    parser.add_argument("--ts", help='Timestamp the Ipython notebook name', action='store_true')
+    return parser
+
+
+if __name__ == '__main__':
+
+    parser = get_parser()
+    args = parser.parse_args()
+    res_dir = os.path.abspath(args.RESULT_DIR)
+    res_dir = res_dir.replace(' ', '\\ ')
+    plot_dir = os.path.abspath(args.PLOT_DIR)
+    plot_dir = plot_dir.replace(' ', '\\ ')
+    notebook_name = args.NAME
+    timestamp = args.ts
+
+    docker_cmd = 'docker run -ti -v %(host_odir)s:/home/sysbio/sim-output -v %(host_plot_dir)s:/home/sysbio/plots sysbio-ipython' % {
+        'host_odir': res_dir,
+        'host_plot_dir': plot_dir
+    }
+
+    exec_cmd = '%(docker)s ./create-notebook %(name)s' % {
+        'docker': docker_cmd,
+        'name': notebook_name
+    }
+
+    print
+    print exec_cmd
+    print
+
+    subprocess.call(exec_cmd, shell=True)
+    
