@@ -7,3 +7,6 @@ output/
 
 # virtual environments
 env*
+
+# IPython Notebook checkpoints
+*.ipynb_checkpoints*
