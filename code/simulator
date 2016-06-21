@@ -8,7 +8,9 @@ from datetime import datetime as dtime
 
 _default_cfg = '''
 {
-	"integration": {},
+	"integration": {
+		"stiff": true
+	},
 	"plotting": {
 		"timecourse": {
 			"plot-all": true,
@@ -26,18 +28,20 @@ class TimecoursePlot(object):
 class Config(object):
 
 	def __init__(self, fname, model):
-		if fname is None:
+		if not fname:
 			_json_str = _default_cfg
 		else:
 			with open(fname) as fin:
 				_json_str = ''.join(fin.readlines())
-		self._load_cfg(_json_str)
 		self.model = model
+		self._load_cfg(_json_str)
 
 	def _load_cfg(self, json_str):
 		self._opts = json.loads(json_str)
 		if self._opts['plotting']['timecourse']['plot-all']:
 			species = [str(val) for val in self.model.getStateVectorIds()]
+			if 'groups' not in self._opts['plotting']['timecourse']:
+				self._opts['plotting']['timecourse']['groups'] = {}
 			self._opts['plotting']['timecourse']['groups']['All species'] = {"species": species}
 
 		self.species = self.get_species_list()
@@ -51,7 +55,7 @@ class Config(object):
 			selection = self.model.getStateVectorIds()
 		elif self._opts['plotting']['timecourse']['plot-groups']:
 			selection = []
-			for gid, gval in self._opts['plotting']['timecourse']['groups'].iteritems():
+			for gid, gval in self._opts['plotting']['timecourse']['groups'].items():
 				selection.extend(gval['species'])
 		return ['time'] + [str(val) for val in selection]
 
