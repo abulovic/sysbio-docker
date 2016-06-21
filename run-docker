@@ -18,4 +18,4 @@ if [ ! -d "$DIR/plots" ]; then
   mkdir $DIR/plots
 fi
 
-docker run -ti -v $DIR/models/:/home/sysbio/models -v $DIR/code/:/home/sysbio/code -v $DIR/sim-output/:/home/sysbio/sim-output $DIMAGE
+docker run -ti -v $DIR/models/:/home/sysbio/models -v $DIR/sim-output/:/home/sysbio/sim-output $DIMAGE
