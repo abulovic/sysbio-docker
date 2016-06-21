@@ -21,7 +21,7 @@ RUN pip install ipdb
 
 RUN userdel user
 
-RUN useradd --shell=/bin/bash --create-home --home-dir=/home/sysbio --uid $UID sysbio
+RUN useradd --shell=/bin/bash --create-home --home-dir=/home/sysbio --uid ${UID:-1000} sysbio
 
 USER sysbio
 
