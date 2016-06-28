@@ -13,7 +13,7 @@ from plotly.graph_objs import Scatter, Figure, Layout'''
 
 _setup = '''init_notebook_mode(connected=True)'''
 
-_ddir = 'data_dir = "../%(ddir)s"'
+_ddir = 'data_dir = "."'
 
 _data_processing = '''figures = {}
 for fname in filter(lambda fname: fname.endswith('.txt'), os.listdir(data_dir)):
@@ -43,8 +43,7 @@ iplot({
 
 def get_parser():
     parser = ArgumentParser()
-    parser.add_argument("NAME", help="Name of the IPython notebook with plots")
-    parser.add_argument("--ts", help='Timestamp the Ipython notebook name', action='store_true')
+    parser.add_argument("ddir", help="Directory with data")
     return parser
 
 
@@ -52,12 +51,12 @@ if __name__ == '__main__':
 
     parser = get_parser()
     args = parser.parse_args()
-    notebook_name = args.NAME
-    timestamp = args.ts
+    notebook_name = 'plots'
 
-    ddir = './sim-output'
+
+    ddir = args.ddir
     figures = {}
-    for fname in filter(lambda fname: fname.endswith('.txt'), os.listdir('./sim-output')):
+    for fname in filter(lambda fname: fname.endswith('.txt'), os.listdir(ddir)):
         title = fname[:-4]
         timecourses = {}
         full_fname = '%s/%s' % (ddir, fname)
@@ -66,19 +65,19 @@ if __name__ == '__main__':
                 data = line.strip().split(';')
                 timecourses[data[0]] = [float(val) for val in data[1:]]
             figures[title] = timecourses
-    
+
     notebook = nbv4.new_notebook()
     notebook
     notebook['cells'].append(nbv4.new_code_cell(_imports))
     notebook['cells'].append(nbv4.new_code_cell(_setup))
-    notebook['cells'].append(nbv4.new_code_cell(_ddir % {'ddir': ddir}))
+    notebook['cells'].append(nbv4.new_code_cell(_ddir))
     notebook['cells'].append(nbv4.new_code_cell(_data_processing))
 
     for fname in figures:
         notebook['cells'].append(nbv4.new_code_cell(_plot % {'title': fname}))
 
 
-    with io.open('./plots/%(name)s.ipynb' % {'name': notebook_name}, 'w', encoding='utf-8') as f:
+    with io.open('%(ddir)s/%(name)s.ipynb' % {'ddir': ddir, 'name': notebook_name}, 'w', encoding='utf-8') as f:
         f.write(nbv4.writes(notebook))
 
 
