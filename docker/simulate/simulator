@@ -92,7 +92,7 @@ def _is_int(_str):
 
 
 def create_directory_structure(mfile, cfile, cfg):
-	mname = cfg.model.getModelName()
+	mname = cfg.model.getModelName().replace(' ', '_')
 	topdir = '/data/%s' % mname
 	if not os.path.isdir(topdir):
 		os.makedirs(topdir)
@@ -132,6 +132,8 @@ def main():
 	outdir = create_directory_structure(model_file, cfg_file, cfg)
 
 	export_sim(cfg, result, outdir)
+
+	print outdir
 
 
 if __name__ == '__main__':
