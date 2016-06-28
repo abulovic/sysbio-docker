@@ -45,7 +45,14 @@ def copy_files(mfile, cfile, mname):
         subprocess.call(_docker_cp_latest)
 
 def run_simulator():
-    subprocess.call('docker run --rm --volumes-from data-store sysbio-simulate python simulator')
+    _simulate_cmd = 'docker run --rm --volumes-from data-store sysbio-simulate python simulator'
+    p = subprocess.Popen(_simulate_cmd.split(), stdout=subprocess.PIPE)
+    out, err = p.communicate()
+    return out.strip()
+
+def run_plot(outdir):
+    _plot_cmd = 'docker run --rm --volumes-from data-store sysbio-plot python create-notebook %s' % outdir
+    subprocess.call(_plot_cmd)
 
 def main():
 
@@ -58,7 +65,19 @@ def main():
 
     copy_files(args.model, cfg_file, model_name)
 
-    run_simulator()
+    outdir = run_simulator()
+
+    run_plot(outdir)
+
+    subprocess.call('docker run --rm -ti --volumes-from data-store ubuntu tar -zcvf %(odir)s/%(mname)s.tar.gz %(odir)s --directory=%(odir)s' % {
+            'odir': outdir,
+            'mname': model_name
+        })
+
+    subprocess.call('docker cp data-store:/%(odir)s/%(mname)s.tar.gz .' % {
+            'odir': outdir,
+            'mname': model_name
+        })
 
 
 if __name__ == '__main__':
