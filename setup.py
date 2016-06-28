@@ -41,7 +41,7 @@ setup(
             "build_docker=docker.build:DockerBuild",
         ],
         "console_scripts": [
-            "simulate=sysbio.simulate:main"
+            "sb-simulate=sysbio.simulate:main"
         ]
     },
 )
