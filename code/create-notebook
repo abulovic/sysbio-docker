@@ -3,44 +3,7 @@
 import os
 import io
 import subprocess
-import nbformat.v4 as nbv4
 from argparse import ArgumentParser
-
-
-_imports = '''import os, sys
-from plotly.offline import download_plotlyjs, init_notebook_mode, plot, iplot
-
-from plotly.graph_objs import Scatter, Figure, Layout'''
-
-_setup = '''init_notebook_mode(connected=True)'''
-
-_ddir = 'data_dir = "../%(ddir)s"'
-
-_data_processing = '''figures = {}
-for fname in filter(lambda fname: fname.endswith('.txt'), os.listdir(data_dir)):
-    title = fname[:-4]
-    timecourses = {}
-    full_fname = '%s/%s' % (data_dir, fname)
-    with open(full_fname) as fin:
-        for line in fin:
-            data = line.strip().split(';')
-            timecourses[data[0]] = [float(val) for val in data[1:]]
-        figures[title] = timecourses
-'''
-
-_plot = '''layout = Layout(title='%(title)s')
-traces = []
-_data = figures['%(title)s']
-for name, val in _data.iteritems():
-    if name == 'time':
-        continue
-    else:
-        traces.append(Scatter(x=_data['time'], y=_data[name], name=name))
-iplot({
-    'data': traces,
-    'layout': layout
-    })
-'''
 
 def get_parser():
     parser = ArgumentParser()
@@ -77,4 +40,3 @@ if __name__ == '__main__':
     print
 
     subprocess.call(exec_cmd, shell=True)
-    
