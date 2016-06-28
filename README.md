@@ -1,67 +1,85 @@
 # sysbio-docker
 
-Serves the purpose of having some systems biology simulation and coversion tools in one place. \
-Features:
+This is a tool I've developed for the purpose of having easily installable tool for simulation and visualization of systems biology ODE models.
+Because of complexities during the installation of some of the modules required, I've decided to dockerize the entire thing - so the only thing you need to install now is [Docker](https://www.docker.com/) itself.
 
-1. [libSBML](http://sbml.org/Software/libSBML)
-2. [libroadrunner](http://libroadrunner.org/) for Python
-3. [antimony](http://www.ncbi.nlm.nih.gov/pmc/articles/PMC2735663/)
-4. Local scripts for simulation and plotting.
+The currently supported model input format is [SBML](http://sbml.org/Main_Page), loaded into Python through [libSBML](http://sbml.org/Software/libSBML).
+For the purposes of simulation, the tool uses [libroadrunner](http://libroadrunner.org/).
+The desired simulation output can be easily configured through a **json-based config file** to output different combinations of species in different timecourses, or to output them all together in one plot. The same configuration file enables you to configure the numerical solver and accepts all the parameters which can be passed onto [RoadRunner.simulate](http://sys-bio.github.io/roadrunner/python_docs/api_reference.html#RoadRunner.RoadRunner.simulate) method (more on configuration below).
+The plots are then generated through [IPython](https://ipython.org/) API for creating notebooks, and [Plotly](https://plot.ly/python/) is used for interactive graph generation.
 
 ## Installation
 
-This repository is linked to [Docker hub](https://hub.docker.com/r/abulovic/sysbio-docker/) via an [automated build](https://docs.docker.com/docker-hub/builds/) process. 
-Having all of these tools in Docker format enables easier management of the tools necessary across different Linux machines.
-
-### From Github
-You can clone this repo and build the Docker locally:
+To be able to install this tool, you first have to install [Docker](https://www.docker.com/) (detailed installation instructions for all OSs provided on their site). 
+After that, you can clone this repository:
 
     git clone https://github.com/abulovic/sysbio-docker.git
+
+after which you can create [virtual environment](https://virtualenv.pypa.io/en/stable/) by running
+
     cd sysbio-docker
-    docker build -t abulovic/sysbio-docker .
+    virtualenv env
+    source env/bin/activate # or env/Scripts/activate on windows
 
-This will create a Docker image named `sysbio` which you can find if you invoke
+In this environment we will install all that is required to look at our beautiful interactive [jupyter](http://jupyter.readthedocs.io/en/latest/)-based plots.
+Let's install this tool:
 
-    docker images
+    python setup.py build install
 
-### From Docker Hub
+And now let's setup the docker part of our system
 
-You can clone the docker image directly from Docker hub:
+    python setup.py build_docker
 
-    docker run -ti abulovic/sysbio-docker
+Now we're good to go.
 
-After this, you will have a `abulovic/sysbio-docker` image listed under `docker images`.
+## Usage
 
-## Running the image
-The way this docker image is being used now is to:
+To test whether we've successfuly installed all that's necessary, let's try and simulate a model provided in the repository:
 
-* Run interactive shell through Docker with all tools installed
-* Share certain local folders with the Docker image 
-* Simulate models and export the data to the shared folders
+    sb-simulate models/BIOMD0000000003.xml
 
-You can run the Docker image by running the provided `run-docker.sh` script.
+If the command was successful, you should get a BIOMD0000000003.tar.gz file in your current directory. When you unpack it, you can see the following files listed:
 
-## How it works
-So, the idea is that you put the models you want to simulate in the local `./models` directory in the SBML (XML) format. You need to put the models there prior to running the docker:
+    .
+    ..
+    BIOMD0000000003.xml
+    BIOMD0000000003.cfg
+    CM-plot.txt
+    X.txt
+    plots.ipynb
 
-    ./run-docker
+The first file is the original model we've supplied to the simulator. The second is the configuration file which the program has automatically recognized because it has the same name and is in the same directory as the model file. If you open this file, you will see that using it we've configured both the numerical solver:
 
-Let us presume the name of your model is called `model.xml`. The simulator needs the model file, but it can also accept configuration in json format and the output directory to which the simulation results will be stored:
+    {
+        "integration": {
+            "start": 0,
+            "end": 100,
+            "stiff": true
+        },
+        ...
 
-    ./code/simulator [PATH TO MODEL FILE] --cfg [PATH TO JSON CONFIG] --odir [OUTPUT DIRECTORY]
+and how the simulation data will be grouped into output textual files and plots:
 
-In your case:
+    "plotting": {
+            "timecourse": {
+                "plot-all": false,
+                "plot-groups": true,
+                "groups": {
+                    "CM-plot": {
+                        "species": ["C", "M"],
+                        "vlines": [],
+                        "hlines": []
+                    },
+                    "X": {
+                        "species": ["X"]
+                    }
+                }
+            }
+        }
 
-    ./code/simulator ./models/model.xml --odir ./output
+The 'plot-all' option will create an output file with all the species from the model, and the corresponding plot.
+The 'groups' option enables you to specify how you want to group species into separate plots and output files. Here we see two plots named 'CM-plot' and 'X'.
 
-The configuration is not necessary, but useful, as I'll explain in a second. If successful, it will give you the output of a format:
+This is an example of what the final plot looks like. Notice that this one is not interactive, while the real plots you will get as a result of simulation are.
 
-    Results stored to:  ./output//ModelName/2016-06-06T20:37:32.778831
-
-You can browse the folder and see that the results of the simulation are stored in the `;` delimited format in a textual file.
-You can use this file to generate plots in an interactive IPython notebook using [Plotly](https://plot.ly/)-offline.
-Run the following command with the output folder from the previous script:
-
-    ./code/create-notebook ./output//ModelName/2016-06-06T20:37:32.778831
-
-You can now check the content of that folder - you should have a `plotter.ipynb`
+![example-plot](https://cloud.githubusercontent.com/assets/1510530/16435301/3c40d5a2-3d95-11e6-8854-f381924eea94.png)
