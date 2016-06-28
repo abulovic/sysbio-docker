@@ -44,6 +44,9 @@ def copy_files(mfile, cfile, mname):
     with create_delete('latest', mname):
         subprocess.call(_docker_cp_latest)
 
+def run_simulator():
+    subprocess.call('docker run --rm --volumes-from data-store sysbio-simulate python simulator')
+
 def main():
 
     parser = get_parser()
@@ -54,6 +57,8 @@ def main():
     cfg_file = '%s.cfg' % '/'.join([model_dir, model_name])
 
     copy_files(args.model, cfg_file, model_name)
+
+    run_simulator()
 
 
 if __name__ == '__main__':
