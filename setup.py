@@ -40,5 +40,8 @@ setup(
         "distutils.commands": [
             "build_docker=docker.build:DockerBuild",
         ],
+        "console_scripts": [
+            "simulate=sysbio.simulate:main"
+        ]
     },
 )
