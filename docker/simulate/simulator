@@ -2,9 +2,10 @@
 import os
 import sys
 import json
-import roadrunner
-from argparse import ArgumentParser
+import shutil
 from datetime import datetime as dtime
+
+import roadrunner
 
 _default_cfg = '''
 {
@@ -74,41 +75,63 @@ def get_timecourse(result, species, name):
 	return result[:, species.index(name)]
 
 def export_sim(cfg, result, out_dir):
-	model_dir = os.path.sep.join([out_dir, cfg.model.getModelName().replace(' ', '_')])
-	if not os.path.isdir(model_dir):
-		os.makedirs(model_dir)
-	cpath = model_dir
-	if not os.path.isdir(cpath):
-		os.makedirs(cpath)
-
-	print 'Results stored to: ', cpath
-
 	for name, opts in cfg.get_timecourse_plots():
-		with open(os.path.sep.join([cpath, '%s.txt' % name]), 'w') as fout:
+		with open(os.path.sep.join([out_dir, '%s.txt' % name]), 'w') as fout:
 			species = ['time'] + opts["species"]
 			for sp in species:
 				res = get_timecourse(result, species, sp)
 				fout.write('%s;%s\n' % (sp, ';'.join([str(val) for val in res])))
 
 
+def _is_int(_str):
+	try:
+		int(_str)
+		return True
+	except Exception, e:
+		return False
+
+
+def create_directory_structure(mfile, cfile, cfg):
+	mname = cfg.model.getModelName()
+	topdir = '/data/%s' % mname
+	if not os.path.isdir(topdir):
+		os.makedirs(topdir)
+	simdirs = map(lambda f: int(f), filter(lambda f: _is_int(f), os.listdir(topdir)))
+	simdirs.append(0)
+	new_simdir = max(simdirs) + 1
+
+	abs_simdir = '%s/%d' % (topdir, new_simdir)
+	os.makedirs(abs_simdir)
+
+	shutil.copy(mfile, abs_simdir)
+	if cfile:
+		shutil.copy(cfile, abs_simdir)
+
+	return abs_simdir
+
+
 
 def main():
-	parser = get_parser()
-	args = parser.parse_args()
 
-	model_file = args.MODEL
+	with open('/data/models/latest') as fin:
+		model_name = fin.readline().strip()
+	model_file = '/data/models/%(mname)s.xml' % {'mname': model_name}
+	cfg_file = '/data/models/%(mname)s.cfg' % {'mname': model_name}
+
 	rr = roadrunner.RoadRunner(model_file)
 
-	cfg = Config(args.cfg, rr.getModel())
+	if not os.path.isfile(cfg_file):
+		cfg_file = None
+	cfg = Config(cfg_file, rr.getModel())
+
 	sim_opts = cfg.get_sim_options()
 	sim_opts['selections'] = cfg.species
 
 	result = rr.simulate(**cfg.get_sim_options())
 
-	export_sim(cfg, result, args.odir)
-	
+	outdir = create_directory_structure(model_file, cfg_file, cfg)
 
-
+	export_sim(cfg, result, outdir)
 
 
 if __name__ == '__main__':
