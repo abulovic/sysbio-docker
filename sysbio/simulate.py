@@ -69,9 +69,9 @@ def main():
 
     run_plot(outdir)
 
-    subprocess.call('docker run --rm -ti --volumes-from data-store ubuntu tar -zcvf %(odir)s/%(mname)s.tar.gz %(odir)s --directory=%(odir)s' % {
+    subprocess.call('docker run --rm -ti --volumes-from data-store -w %(odir)s ubuntu tar -zcvf %(mname)s.tar.gz .' % {
             'odir': outdir,
-            'mname': model_name
+            'mname': model_name,
         })
 
     subprocess.call('docker cp data-store:/%(odir)s/%(mname)s.tar.gz .' % {
