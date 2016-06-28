@@ -4,6 +4,7 @@ from setuptools import Command
 _docker_build_cmds = '''
 docker pull ubuntu
 docker create -v /data --name data-store ubuntu
+docker run --rm --volumes-from data-store ubuntu mkdir /data/models
 docker build -t sysbio-simulate docker/simulate
 docker build -t sysbio-plot docker/plot
 '''
