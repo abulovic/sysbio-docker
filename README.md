@@ -38,7 +38,7 @@ To test whether we've successfuly installed all that's necessary, let's try and 
 
     sb-simulate models/BIOMD0000000003.xml
 
-If the command was successful, you should get a BIOMD0000000003.tar.gz file in your current directory. When you unpack it, you can see the following files listed:
+If the command was successful, you should get a `BIOMD0000000003.tar.gz` file in your current directory. When you unpack it, you can see the following files listed:
 
     .
     ..
@@ -77,9 +77,18 @@ and how the simulation data will be grouped into output textual files and plots:
             }
         }
 
-The 'plot-all' option will create an output file with all the species from the model, and the corresponding plot.
-The 'groups' option enables you to specify how you want to group species into separate plots and output files. Here we see two plots named 'CM-plot' and 'X'.
+The `'plot-all'` option will create an output file with all the species from the model, and the corresponding plot.
+The `'groups'` option enables you to specify how you want to group species into separate plots and output files. Here we see two plots named 'CM-plot' and 'X'.
 
 This is an example of what the final plot looks like. Notice that this one is not interactive, while the real plots you will get as a result of simulation are.
 
 ![example-plot](https://cloud.githubusercontent.com/assets/1510530/16435301/3c40d5a2-3d95-11e6-8854-f381924eea94.png)
+
+## Visualization
+
+Because you've just installed all that's needed for opening IPython notebooks, you can go ahead and type
+
+    ipython notebook
+
+in your console. Navigate to the directory where you've unpacked your simulation results, and open the `plots.ipynb` file.
+Run the notebook and enjoy!
