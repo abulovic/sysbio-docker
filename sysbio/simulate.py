@@ -28,7 +28,8 @@ def copy_files(mfile, cfile, mname):
         'mname': mname,
         'type': 'xml'
     }
-    subprocess.call(_cp_model)
+    p = subprocess.Popen(_cp_model.split(), stdout=subprocess.PIPE, shell=True)
+    out, err = p.communicate()
 
     # copy configuration file
     if os.path.isfile(cfile):
@@ -37,12 +38,13 @@ def copy_files(mfile, cfile, mname):
             'mname': mname,
             'type': 'cfg'
         }
-        subprocess.call(_cp_cfg)
+        p = subprocess.Popen(_cp_cfg, stdout=subprocess.PIPE, shell=True)
+        out, err = p.communicate()
 
     # write down the name of the model to simulate
     # in the indicator file - /data/models/latest
     with create_delete('latest', mname):
-        subprocess.call(_docker_cp_latest)
+        subprocess.call(_docker_cp_latest, shell=True)
 
 def run_simulator():
     _simulate_cmd = 'docker run --rm --volumes-from data-store sysbio-simulate python simulator'
@@ -52,7 +54,7 @@ def run_simulator():
 
 def run_plot(outdir):
     _plot_cmd = 'docker run --rm --volumes-from data-store sysbio-plot python create-notebook %s' % outdir
-    subprocess.call(_plot_cmd)
+    subprocess.call(_plot_cmd, shell=True)
 
 def main():
 
@@ -72,12 +74,12 @@ def main():
     subprocess.call('docker run --rm -ti --volumes-from data-store -w %(odir)s ubuntu tar -zcvf %(mname)s.tar.gz .' % {
             'odir': outdir,
             'mname': model_name,
-        })
+        }, shell=True)
 
     subprocess.call('docker cp data-store:/%(odir)s/%(mname)s.tar.gz .' % {
             'odir': outdir,
             'mname': model_name
-        })
+        }, shell=True)
 
 
 if __name__ == '__main__':
