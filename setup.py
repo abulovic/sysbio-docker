@@ -41,7 +41,7 @@ setup(
             "build_docker=docker.build:DockerBuild",
         ],
         "console_scripts": [
-            "sb-simulate=sysbio.simulate:main"
+            "create-notebook=sysbio.simulate:create_notebook"
         ]
     },
 )
