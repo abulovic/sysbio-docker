@@ -7,6 +7,7 @@ from argparse import ArgumentParser
 from datetime import datetime as dtime
 
 import roadrunner
+import tellurium as te
 
 _default_cfg = '''
 {
@@ -39,7 +40,7 @@ class Config(object):
 			species = [str(val) for val in self.model.getStateVectorIds()]
 			if 'groups' not in self._opts['plotting']['timecourse']:
 				self._opts['plotting']['timecourse']['groups'] = {}
-			self._opts['plotting']['timecourse']['groups']['All species'] = {"species": species}
+			self._opts['plotting']['timecourse']['groups']['All_species'] = {"species": species}
 
 		self.species = self.get_species_list()
 
@@ -106,10 +107,17 @@ def create_directory_structure(mfile, cfile, cfg):
 def simulate():
 	with open('/data/models/latest') as fin:
 		model_name = fin.readline().strip()
-	model_file = '/data/models/%(mname)s.xml' % {'mname': model_name}
+	sbml_file = '/data/models/%(mname)s.xml' % {'mname': model_name}
+	ant_file = '/data/models/%(mname)s.txt' % {'mname': model_name}
 	cfg_file = '/data/models/%(mname)s.cfg' % {'mname': model_name}
 
-	rr = roadrunner.RoadRunner(model_file)
+	if os.path.isfile(sbml_file):
+		model_file = sbml_file
+		rr = roadrunner.RoadRunner(model_file)
+	elif os.path.isfile(ant_file):
+		model_file = ant_file
+		with open(ant_file) as fin:
+			rr = te.loada(fin.read())
 
 	if not os.path.isfile(cfg_file):
 		cfg_file = None
@@ -129,10 +137,17 @@ def simulate():
 def list_plots():
 	with open('/data/models/latest') as fin:
 		model_name = fin.readline().strip()
-	model_file = '/data/models/%(mname)s.xml' % {'mname': model_name}
+	sbml_file = '/data/models/%(mname)s.xml' % {'mname': model_name}
+	ant_file = '/data/models/%(mname)s.txt' % {'mname': model_name}
 	cfg_file = '/data/models/%(mname)s.cfg' % {'mname': model_name}
 
-	rr = roadrunner.RoadRunner(model_file)
+	if os.path.isfile(sbml_file):
+		model_file = sbml_file
+		rr = roadrunner.RoadRunner(model_file)
+	elif os.path.isfile(ant_file):
+		model_file = ant_file
+		with open(ant_file) as fin:
+			rr = te.loada(fin.read())
 
 	if not os.path.isfile(cfg_file):
 		cfg_file = None
