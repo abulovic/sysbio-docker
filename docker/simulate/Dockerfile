@@ -24,5 +24,6 @@ RUN userdel user
 RUN useradd --shell=/bin/bash --create-home --home-dir=/home/sysbio --uid ${UID:-1000} sysbio
 
 ADD simulator /home/sysbio
+ADD converter /home/sysbio
 
 WORKDIR /home/sysbio
