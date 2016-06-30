@@ -41,7 +41,8 @@ setup(
             "build_docker=docker.build:DockerBuild",
         ],
         "console_scripts": [
-            "create-notebook=sysbio.simulate:create_notebook"
+            "create-notebook=sysbio.simulate:create_notebook",
+            "convert-model=sysbio.utils:run_conversion",
         ]
     },
 )
