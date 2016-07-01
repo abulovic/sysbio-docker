@@ -70,15 +70,15 @@ def get_parser():
 	parser.add_argument('action', choices=['sim', 'list-plots'])
 	return parser
 
-def get_timecourse(result, species, name):
-	return result[:, species.index(name)]
+def get_timecourse(result, species, all_species, name):
+	return result[:, all_species.index(name)]
 
 def export_sim(cfg, result, out_dir):
 	for name, opts in cfg.get_timecourse_plots().items():
 		with open(os.path.sep.join([out_dir, '%s.txt' % name]), 'w') as fout:
 			species = ['time'] + opts["species"]
 			for sp in species:
-				res = get_timecourse(result, species, sp)
+				res = get_timecourse(result, species, cfg.species, sp)
 				fout.write('%s;%s\n' % (sp, ';'.join([str(val) for val in res])))
 
 
