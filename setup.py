@@ -43,6 +43,7 @@ setup(
         "console_scripts": [
             "create-notebook=sysbio.simulate:create_notebook",
             "convert-model=sysbio.utils:run_conversion",
+            "create-config=sysbio.utils:run_create_default_config"
         ]
     },
 )
