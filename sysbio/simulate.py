@@ -55,32 +55,6 @@ def run_plot(outdir):
     _plot_cmd = 'docker run --rm --volumes-from data-store sysbio-plot python create-notebook %s' % outdir
     subprocess.call(_plot_cmd, shell=True)
 
-def main():
-
-    parser = get_parser()
-    args = parser.parse_args()
-
-    model_dir = '/'.join(args.model.split('/')[:-1])
-    model_name = '.'.join(args.model.split('/')[-1].split('.')[:-1])
-    cfg_file = '%s.cfg' % '/'.join([model_dir, model_name])
-
-    copy_files(args.model, cfg_file, model_name)
-
-    outdir = run_simulator()
-
-    ls_cmd = 'docker run --rm -ti --volumes-from data-store ubuntu ls %s' % outdir
-    p = subprocess.Popen(ls_cmd.split(), stdout=subprocess.PIPE)
-    out, err = p.communicate()
-    files = out.strip().split()
-
-    for _f in filter(lambda f: f.endswith('.txt'), files):
-        cp_cmd = 'docker cp data-store:%(odir)s/%(file)s .'
-        p = subprocess.Popen(cp_cmd % {
-                'odir': outdir,
-                'file': _f
-            }, shell=True)
-        out, err = p.communicate()
-
 
 def run_simulation(model):
 
