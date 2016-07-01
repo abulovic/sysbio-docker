@@ -23,6 +23,8 @@ _default_cfg = '''
 }
 '''
 
+
+
 class Config(object):
 
 	def __init__(self, fname, model):
@@ -63,7 +65,9 @@ class Config(object):
 
 def get_parser():
 	parser = ArgumentParser()
-	parser.add_argument('action', choices=('sim', 'list-plots'))
+	parser.add_argument('model', help='Model file')
+	parser.add_argument('format', help='Model format')
+	parser.add_argument('action', choices=['sim', 'list-plots'])
 	return parser
 
 def get_timecourse(result, species, name):
@@ -104,19 +108,14 @@ def create_directory_structure(mfile, cfile, cfg):
 
 	return abs_simdir
 
-def simulate():
-	with open('/data/models/latest') as fin:
-		model_name = fin.readline().strip()
-	sbml_file = '/data/models/%(mname)s.xml' % {'mname': model_name}
-	ant_file = '/data/models/%(mname)s.txt' % {'mname': model_name}
+def simulate(model, _format):
+	model_name = model.split('/')[-1].split('.')[0]
 	cfg_file = '/data/models/%(mname)s.cfg' % {'mname': model_name}
 
-	if os.path.isfile(sbml_file):
-		model_file = sbml_file
-		rr = roadrunner.RoadRunner(model_file)
-	elif os.path.isfile(ant_file):
-		model_file = ant_file
-		with open(ant_file) as fin:
+	if _format == 'sbml':
+		rr = roadrunner.RoadRunner(model)
+	elif _format == 'antimony':
+		with open(model) as fin:
 			rr = te.loada(fin.read())
 
 	if not os.path.isfile(cfg_file):
@@ -128,32 +127,27 @@ def simulate():
 
 	result = rr.simulate(**cfg.get_sim_options())
 
-	outdir = create_directory_structure(model_file, cfg_file, cfg)
+	outdir = create_directory_structure(model, cfg_file, cfg)
 
 	export_sim(cfg, result, outdir)
 
 	print outdir
 
-def list_plots():
-	with open('/data/models/latest') as fin:
-		model_name = fin.readline().strip()
-	sbml_file = '/data/models/%(mname)s.xml' % {'mname': model_name}
-	ant_file = '/data/models/%(mname)s.txt' % {'mname': model_name}
+def list_plots(model, _format):
+	model_name = model.split('/')[-1].split('.')[0]
 	cfg_file = '/data/models/%(mname)s.cfg' % {'mname': model_name}
 
-	if os.path.isfile(sbml_file):
-		model_file = sbml_file
-		rr = roadrunner.RoadRunner(model_file)
-	elif os.path.isfile(ant_file):
-		model_file = ant_file
-		with open(ant_file) as fin:
+	if _format == 'sbml':
+		rr = roadrunner.RoadRunner(model)
+	elif _format == 'antimony':
+		with open(model) as fin:
 			rr = te.loada(fin.read())
 
 	if not os.path.isfile(cfg_file):
 		cfg_file = None
 	cfg = Config(cfg_file, rr.getModel())
 
-	print ' '.join(cfg.get_timecourse_plots().keys())
+	print '\n'.join(cfg.get_timecourse_plots().keys())
 
 
 def main():
@@ -162,10 +156,10 @@ def main():
 	args = parser.parse_args()
 
 	if args.action == 'sim':
-		simulate()
+		simulate(args.model, args.format)
 
 	elif args.action == 'list-plots':
-		list_plots()
+		list_plots(args.model, args.format)
 
 
 	

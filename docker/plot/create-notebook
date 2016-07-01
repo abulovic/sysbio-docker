@@ -17,7 +17,7 @@ _setup = '''init_notebook_mode(connected=True)'''
 
 _ddir = 'data_dir = "."'
 
-_simulate = 'plots = run_simulation("%(mfile)s")'
+_simulate = 'plots = run_simulation("%(mfile)s", "%(format)s")'
 
 _plot = '''for plot in plots:
     plot_timecourse(plot)'''
@@ -25,6 +25,7 @@ _plot = '''for plot in plots:
 def get_parser():
     parser = ArgumentParser()
     parser.add_argument("model", help="Path to model file")
+    parser.add_argument("format", help="Model format")
     return parser
 
 
@@ -34,32 +35,22 @@ if __name__ == '__main__':
     args = parser.parse_args()
     model = args.model
     mname = model.split('/')[-1].split('.')[0]
+    _format = args.format
 
     notebook_name = '%s-plots' % mname
-
-    ddir = '.'
-    figures = {}
-    for fname in filter(lambda fname: fname.endswith('.txt'), os.listdir(ddir)):
-        title = fname[:-4]
-        timecourses = {}
-        full_fname = '%s/%s' % (ddir, fname)
-        with open(full_fname) as fin:
-            for line in fin:
-                data = line.strip().split(';')
-                timecourses[data[0]] = [float(val) for val in data[1:]]
-            figures[title] = timecourses
 
     notebook = nbv4.new_notebook()
     notebook
     notebook['cells'].append(nbv4.new_code_cell(_imports))
     notebook['cells'].append(nbv4.new_code_cell(_setup))
     notebook['cells'].append(nbv4.new_code_cell(_ddir))
-    notebook['cells'].append(nbv4.new_code_cell(_simulate % {'mfile': model}))
+    notebook['cells'].append(nbv4.new_code_cell(_simulate % {
+        'mfile': model,
+        'format': _format,
+        }
+    ))
+    
     notebook['cells'].append(nbv4.new_code_cell(_plot))
-
-    for fname in figures:
-        notebook['cells'].append(nbv4.new_code_cell(_plot % {'title': fname}))
-
 
     with io.open('/data/%(name)s.ipynb' % {'name': notebook_name}, 'w', encoding='utf-8') as f:
         f.write(nbv4.writes(notebook))
