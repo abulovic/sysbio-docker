@@ -11,7 +11,7 @@ _imports = '''import os, sys
 from plotly.offline import download_plotlyjs, init_notebook_mode, plot, iplot
 from plotly.graph_objs import Scatter, Figure, Layout
 
-from sysbio import run_simulation, plot_timecourse'''
+from sysbio import run_simulation, plot_timecourse, plot_steady_state'''
 
 _setup = '''init_notebook_mode(connected=True)'''
 
@@ -20,7 +20,10 @@ _ddir = 'data_dir = "."'
 _simulate = 'plots = run_simulation("%(mfile)s", "%(format)s")'
 
 _plot = '''for plot in plots:
-    plot_timecourse(plot)'''
+    if plot.startswith("SS-"):
+        plot_steady_state(plot)
+    else:
+        plot_timecourse(plot)'''
 
 def get_parser():
     parser = ArgumentParser()
