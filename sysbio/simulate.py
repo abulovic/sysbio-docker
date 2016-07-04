@@ -26,7 +26,33 @@ _docker_cp = 'docker cp %(source)s data-store:/data/models/'
 _docker_cp_latest = 'docker cp latest data-store:/data/models/latest'
 
 
+def get_imported_models(mfile):
+    import re
+
+    imports = []
+    with open(mfile) as fin:
+        for line in fin:
+            if line.startswith('import'):
+                res = re.match('import +"(.+)"', line.strip())
+                if len(res.groups()) == 1:
+                    imports.append(res.groups()[0])
+            else:
+                continue
+    return imports
+
+
 def copy_files(mfile, cfile, mname, _format):
+
+    mdir = '/'.join(mfile.split('/')[:-1])
+    imports = ['%s/%s' % (mdir, _mfile) for _mfile in get_imported_models(mfile)]
+
+    for imp in imports:
+        _cp_import = _docker_cp % {
+            'source': imp
+        }
+        p = subprocess.Popen(_cp_import.split(), stdout=subprocess.PIPE)
+        out, err = p.communicate()
+
     # copy model file
     _cp_model = _docker_cp % {
         'source': mfile,
@@ -83,7 +109,6 @@ def list_plots(model, _format):
     model_name = '.'.join(model.split('/')[-1].split('.')[:-1])
     cfg_file = '%s.cfg' % '/'.join([model_dir, model_name])
 
-    copy_files(model, cfg_file, model_name, _format)
     _list_cmd = 'docker run --rm --volumes-from data-store sysbio-simulate python simulator %(m)s %(f)s list-plots' % {
         'm': model,
         'f': _format
