@@ -109,6 +109,8 @@ def create_directory_structure(mfile, cfile, cfg):
 	return abs_simdir
 
 def simulate(model, _format):
+	os.chdir('/data/models')
+
 	model_name = model.split('/')[-1].split('.')[0]
 	cfg_file = '/data/models/%(mname)s.cfg' % {'mname': model_name}
 
@@ -125,6 +127,8 @@ def simulate(model, _format):
 	sim_opts = cfg.get_sim_options()
 	sim_opts['selections'] = cfg.species
 
+
+
 	result = rr.simulate(**cfg.get_sim_options())
 
 	outdir = create_directory_structure(model, cfg_file, cfg)
@@ -134,6 +138,9 @@ def simulate(model, _format):
 	print outdir
 
 def list_plots(model, _format):
+
+	os.chdir('/data/models')
+
 	model_name = model.split('/')[-1].split('.')[0]
 	cfg_file = '/data/models/%(mname)s.cfg' % {'mname': model_name}
 
