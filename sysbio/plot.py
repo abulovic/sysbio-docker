@@ -1,5 +1,7 @@
+from collections import OrderedDict
+
 from plotly.offline import download_plotlyjs, init_notebook_mode, plot, iplot
-from plotly.graph_objs import Scatter, Figure, Layout
+from plotly.graph_objs import Scatter, Figure, Layout, Bar
 
 
 
@@ -23,3 +25,30 @@ def plot_timecourse(tname):
         'data': traces,
         'layout': layout
         })
+
+def plot_steady_state(ss_fname):
+    fname = '%s.txt' % ss_fname
+    data = OrderedDict()
+    with open(fname) as fin:
+        for line in fin:
+            line = line.strip()
+            if not line:
+                continue
+            name, value = line.split(';')
+            data[name] = float(value)
+
+    data = [Bar(
+            x = data.values(),
+            y = data.keys(),
+            orientation = 'h'
+        )]
+    layout = Layout(
+            title=ss_fname,
+            xaxis=dict(
+                    type='log',
+                    autorange=True
+                )
+        )
+
+    fig = Figure(data=data, layout=layout)
+    iplot(fig)
