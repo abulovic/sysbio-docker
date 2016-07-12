@@ -50,8 +50,6 @@ class Config(object):
 				if 'groups' not in self._opts['plotting']['steady-state']:
 					self._opts['plotting']['steady-state']['groups'] = {}
 				self._opts['plotting']['steady-state']['groups']['All_ss_species'] = {'species': species}
-			else:
-				self._opts['plotting']['steady-state'] = {'plot-all': False}
 
 		self.species = self.get_species_list()
 		self.ss_species = self.get_ss_species_list()
