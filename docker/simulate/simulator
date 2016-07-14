@@ -70,6 +70,9 @@ class Config(object):
 		return ['time'] + [str(val) for val in selection]
 
 	def get_ss_species_list(self):
+		selection = []
+		if 'steady-state' not in self._opts['plotting']:
+			return []
 		if self._opts['plotting']['steady-state']['plot-all']:
 			selection = self.model.getStateVectorIds()
 		elif self._opts['plotting']['steady-state']['plot-groups']:
@@ -83,7 +86,10 @@ class Config(object):
 		return self._opts['plotting']['timecourse']['groups']
 
 	def get_steady_state_plots(self):
-		return self._opts['plotting']['steady-state']['groups']
+		if 'steady-state' in self._opts['plotting']:
+			return self._opts['plotting']['steady-state']['groups']
+		else:
+			return {}
 
 
 def get_parser():
@@ -158,6 +164,8 @@ def simulate(model, _format):
 	if cfg.ss_species:
 		rr.steadyStateSelections = cfg.ss_species
 		ss_result = rr.getSteadyStateValues()
+	else:
+		ss_result = None
 
 
 	outdir = create_directory_structure(model, cfg_file, cfg)
