@@ -21,10 +21,7 @@ def plot_timecourse(tname):
             continue
         else:
             traces.append(Scatter(x=timecourses['time'], y=timecourses[name], name=name))
-    iplot({
-        'data': traces,
-        'layout': layout
-        })
+
     fig = Figure(data=traces, layout=layout)
     return fig
 
