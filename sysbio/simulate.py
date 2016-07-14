@@ -44,7 +44,19 @@ def get_imported_models(mfile):
 def copy_files(mfile, cfile, mname, _format):
 
     mdir = '/'.join(mfile.split('/')[:-1])
-    imports = ['%s/%s' % (mdir, _mfile) for _mfile in get_imported_models(mfile)]
+
+    old_import_len = 0
+    if mdir:
+        imports = ['%s/%s' % (mdir, _mfile) for _mfile in get_imported_models(mfile)]
+    else:
+        imports = get_imported_models(mfile)
+    imports = set(imports)
+    while len(imports) != old_import_len:
+        old_import_len = len(imports)
+        new_imports = set()
+        for f in imports:
+            new_imports.update(get_imported_models(f))
+        imports.update(new_imports)
 
     for imp in imports:
         _cp_import = _docker_cp % {
@@ -140,6 +152,9 @@ def create_notebook():
     p = subprocess.Popen(_create_nb.split(), stdout=subprocess.PIPE)
     out, err = p.communicate()
     nbfile = out.strip()
+
+    if not model_dir:
+        model_dir = '.'
 
     _cp_nb = 'docker cp data-store:%(nbfile)s %(mdir)s' % {
         'nbfile': nbfile,
