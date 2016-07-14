@@ -25,6 +25,8 @@ def plot_timecourse(tname):
         'data': traces,
         'layout': layout
         })
+    fig = Figure(data=traces, layout=layout)
+    return fig
 
 def plot_steady_state(ss_fname):
     fname = '%s.txt' % ss_fname
@@ -51,4 +53,4 @@ def plot_steady_state(ss_fname):
         )
 
     fig = Figure(data=data, layout=layout)
-    iplot(fig)
+    return fig

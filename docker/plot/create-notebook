@@ -21,9 +21,9 @@ _simulate = 'plots = run_simulation("%(mfile)s", "%(format)s")'
 
 _plot = '''for plot in plots:
     if plot.startswith("SS-"):
-        plot_steady_state(plot)
+        iplot(plot_steady_state(plot))
     else:
-        plot_timecourse(plot)'''
+        iplot(plot_timecourse(plot))'''
 
 def get_parser():
     parser = ArgumentParser()
