@@ -18,7 +18,11 @@ After that, you can clone this repository:
 after which you can create [virtual environment](https://virtualenv.pypa.io/en/stable/) by running
 
     cd sysbio-docker
-    virtualenv env
+    curl -O https://pypi.python.org/packages/source/v/virtualenv/virtualenv-1.9.tar.gz
+    tar xvfz virtualenv-1.9.tar.gz
+    cd virtualenv-1.9
+    python virtualenv.py ../env
+    cd ..
     source env/bin/activate # or env/Scripts/activate on windows
 
 In this environment we will install all that is required to look at our beautiful interactive [jupyter](http://jupyter.readthedocs.io/en/latest/)-based plots.
