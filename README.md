@@ -34,61 +34,19 @@ Now we're good to go.
 
 ## Usage
 
-To test whether we've successfuly installed all that's necessary, let's try and simulate a model provided in the repository:
+For ease of usage, there is an example model provided in the repository, and can be found in the `./models` directory. The showcase model is [this one](http://identifiers.org/pubmed/1833774).
 
-    sb-simulate models/BIOMD0000000003.xml
+The idea of this tool is to give you an interactive IPython notebook though which you can invoke the simulation and visualize the results in the same place, and that interactively. Here is how to to about it:
 
-If the command was successful, you should get a `BIOMD0000000003.tar.gz` file in your current directory. When you unpack it, you can see the following files listed:
-
-    .
-    ..
-    BIOMD0000000003.xml
-    BIOMD0000000003.cfg
-    CM-plot.txt
-    X.txt
-    plots.ipynb
-
-The first file is the original model we've supplied to the simulator. The second is the configuration file which the program has automatically recognized because it has the same name and is in the same directory as the model file. If you open this file, you will see that using it we've configured both the numerical solver:
-
-    {
-        "integration": {
-            "start": 0,
-            "end": 100,
-            "stiff": true
-        },
-        ...
-
-and how the simulation data will be grouped into output textual files and plots:
-
-    "plotting": {
-            "timecourse": {
-                "plot-all": false,
-                "plot-groups": true,
-                "groups": {
-                    "CM-plot": {
-                        "species": ["C", "M"],
-                        "vlines": [],
-                        "hlines": []
-                    },
-                    "X": {
-                        "species": ["X"]
-                    }
-                }
-            }
-        }
-
-The `'plot-all'` option will create an output file with all the species from the model, and the corresponding plot.
-The `'groups'` option enables you to specify how you want to group species into separate plots and output files. Here we see two plots named 'CM-plot' and 'X'.
-
-This is an example of what the final plot looks like. Notice that this one is not interactive, while the real plots you will get as a result of simulation are.
-
-![example-plot](https://cloud.githubusercontent.com/assets/1510530/16435301/3c40d5a2-3d95-11e6-8854-f381924eea94.png)
-
-## Visualization
-
-Because you've just installed all that's needed for opening IPython notebooks, you can go ahead and type
-
+    cd ./models
+    create-notebook BIOMD0000000003.xml sbml
     ipython notebook
 
-in your console. Navigate to the directory where you've unpacked your simulation results, and open the `plots.ipynb` file.
-Run the notebook and enjoy!
+First command will position you in the directory where the model is located. If you look in that directory, you will notice that there are two files there. One is an `xml` file - the model in the SBML format, and the other is the `cfg` file, which is the configuration file in JSON format. This file has to be in the same directory as the model, and with the same name to be recognized by the simulator. This file enables you to configure the numeric integrator and plotting details. Configuration details are described in the next chapter.
+
+The second command will create an IPython notebook in the same directory, which will have some basic code to run your simulation and to plot the results. With the third command you run the interactive web tool in which you can open the notebook, and run the commands consecutively. 
+Running the code should give you a plot like this one:
+
+
+![example-plot](https://cloud.githubusercontent.com/assets/1510530/18082444/4747af4e-6e9f-11e6-8589-44d80159ff7f.png)
+
