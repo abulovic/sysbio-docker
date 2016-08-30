@@ -61,13 +61,13 @@ class Config(object):
 		return self._opts['integration']
 
 	def get_species_list(self):
+		selection = set(['time'])
 		if self._opts['plotting']['timecourse']['plot-all']:
-			selection = self.model.getStateVectorIds()
-		elif self._opts['plotting']['timecourse']['plot-groups']:
-			selection = []
+			selection.update(self.model.getStateVectorIds())
+		if self._opts['plotting']['timecourse']['plot-groups']:
 			for gid, gval in self._opts['plotting']['timecourse']['groups'].items():
-				selection.extend(gval['species'])
-		return ['time'] + [str(val) for val in selection]
+				selection.update(gval['species'])
+		return [str(val) for val in selection]
 
 	def get_ss_species_list(self):
 		selection = []
@@ -100,7 +100,7 @@ def get_parser():
 	return parser
 
 def get_timecourse(result, species, all_species, name):
-	return result[:, all_species.index(name)]
+	return result[:, all_species.index(str(name))]
 
 def export_sim(cfg, result, ss_result, out_dir):
 	for name, opts in cfg.get_timecourse_plots().items():
