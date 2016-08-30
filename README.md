@@ -24,6 +24,8 @@ after which you can create [virtual environment](https://virtualenv.pypa.io/en/s
     python virtualenv.py ../env
     cd ..
     source env/bin/activate # or env/Scripts/activate on windows
+    pip install --upgrade pip
+    pip install --upgrade setuptools
 
 In this environment we will install all that is required to look at our beautiful interactive [jupyter](http://jupyter.readthedocs.io/en/latest/)-based plots.
 Let's install this tool:
