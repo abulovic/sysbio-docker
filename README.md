@@ -27,6 +27,14 @@ after which you can create [virtual environment](https://virtualenv.pypa.io/en/s
     pip install --upgrade pip
     pip install --upgrade setuptools
 
+If you want to be able to activate this virtual environment from every location in your shell, run
+
+    echo -ne "\nalias run-sb-docker=\"source [PATH-TO-sysbio-docker]/env/bin/activate\"" >> ~/.bashrc
+
+where you replace the `PATH-TO-sysbio-docker` with an absolute path to the directory where you downloaded sysbio-docker. Next time you start your console, you should be able to start your environment by running
+
+    run-sb-docker
+
 In this environment we will install all that is required to look at our beautiful interactive [jupyter](http://jupyter.readthedocs.io/en/latest/)-based plots.
 Let's install this tool:
 
