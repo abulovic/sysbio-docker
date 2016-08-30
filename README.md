@@ -50,3 +50,33 @@ Running the code should give you a plot like this one:
 
 ![example-plot](https://cloud.githubusercontent.com/assets/1510530/18082444/4747af4e-6e9f-11e6-8589-44d80159ff7f.png)
 
+## Configuration
+
+The configuration file supports configuring the numerical integration and plotting. 
+
+The numerical integration setup is easy - it supports whatever is supported by the RoadRunner.simulate](http://sys-bio.github.io/roadrunner/python_docs/api_reference.html#RoadRunner.RoadRunner.simulate) method, except for the `plot` option, which could provide you with an automatically generated plot. Example would be:
+
+    "integration": {
+        "start": 0,
+        "end": 100,
+        "stiff": true,
+        "steps": 5000
+    }
+
+The other part of the configuration is the `plotting` configuration. Example would be:
+    
+    "plotting": {
+        "timecourse": {
+            "plot-all": false,
+            "plot-groups": true,
+            "groups": {
+                "CM-plot": {
+                    "species": ["C", "M"]
+                }
+            }
+        }
+    }
+
+The currently best-tested feature is the `timecourse` plot, which is also the only one I would suggest using for now. Here you can specify if you want to plot all the species with setting the `plot-all` to `true`. You can also specify if you want to provide your own custom groupings of the species, which you can then list in the `groups` section of the config.
+
+For a new model, you can invoke a command `create-config`, which will provide you with a new configuration file in the described format.
