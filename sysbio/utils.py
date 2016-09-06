@@ -44,7 +44,7 @@ def convert(mfile, src_fromat, dest_format):
 		'mfile': mfile
 	}
 	subprocess.call(_docker_cp_to, shell=True)
-	_docker_convert = 'docker run --rm --volumes-from data-store sysbio-simulate python converter %(src)s %(dest)s' % {
+	_docker_convert = 'docker run --rm --volumes-from data-store sysbio-simulate python converter.py %(src)s %(dest)s' % {
 		'src': src_fromat,
 		'dest': dest_format
 	}
@@ -82,3 +82,17 @@ def run_create_default_config():
 	model = args.model
 
 	create_default_config(model)
+
+def get_imported_models(mfile):
+    import re
+
+    imports = []
+    with open(mfile) as fin:
+        for line in fin:
+            if line.startswith('import'):
+                res = re.match('import +"(.+)"', line.strip())
+                if len(res.groups()) == 1:
+                    imports.append(res.groups()[0])
+            else:
+                continue
+    return imports

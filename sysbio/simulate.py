@@ -4,6 +4,8 @@ import subprocess
 from argparse import ArgumentParser
 from contextlib import contextmanager
 
+from sysbio.utils import get_imported_models
+
 
 @contextmanager
 def create_delete(fname, mname, _format):
@@ -24,21 +26,6 @@ def get_parser():
 
 _docker_cp = 'docker cp %(source)s data-store:/data/models/'
 _docker_cp_latest = 'docker cp latest data-store:/data/models/latest'
-
-
-def get_imported_models(mfile):
-    import re
-
-    imports = []
-    with open(mfile) as fin:
-        for line in fin:
-            if line.startswith('import'):
-                res = re.match('import +"(.+)"', line.strip())
-                if len(res.groups()) == 1:
-                    imports.append(res.groups()[0])
-            else:
-                continue
-    return imports
 
 
 def copy_files(mfile, cfile, mname, _format):
@@ -82,7 +69,7 @@ def copy_files(mfile, cfile, mname, _format):
 
 
 def run_simulator(model, _format):
-    _simulate_cmd = 'docker run --rm --volumes-from data-store sysbio-simulate python simulator %(m)s %(f)s sim' % {
+    _simulate_cmd = 'docker run --rm --volumes-from data-store sysbio-simulate python simulator.py %(m)s %(f)s sim' % {
         'm': model,
         'f': _format
     }
@@ -121,7 +108,7 @@ def list_plots(model, _format):
     model_name = '.'.join(model.split('/')[-1].split('.')[:-1])
     cfg_file = '%s.cfg' % '/'.join([model_dir, model_name])
 
-    _list_cmd = 'docker run --rm --volumes-from data-store sysbio-simulate python simulator %(m)s %(f)s list-plots' % {
+    _list_cmd = 'docker run --rm --volumes-from data-store sysbio-simulate python simulator.py %(m)s %(f)s list-plots' % {
         'm': model,
         'f': _format
     }
