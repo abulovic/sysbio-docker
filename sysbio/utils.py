@@ -62,9 +62,10 @@ def convert(mfile, src_fromat, dest_format):
 		'src': src_fromat,
 		'dest': dest_format
 	}
+	mname = os.path.sep.join([mdir, mname]) if mdir else mname
 	subprocess.call(_docker_convert, shell=True)
 	_docker_cp_from = 'docker cp data-store:/data/models/converted %(mname)s.%(fend)s' % {
-		'mname': os.path.sep.join([mdir, mname]),
+		'mname': mname,
 		'fend': _file_endings[dest_format]
 	}
 	subprocess.call(_docker_cp_from, shell=True)
@@ -115,6 +116,7 @@ def get_imported_models(mfile):
 def copy_files(mfile, cfile, mname, _format):
 
 	mdir = '/'.join(mfile.split('/')[:-1])
+	_docker_cp = 'docker cp %(source)s data-store:/data/models/'
 
 	old_import_len = 0
 	if mdir:
