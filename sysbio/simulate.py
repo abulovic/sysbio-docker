@@ -5,7 +5,7 @@ import subprocess
 from argparse import ArgumentParser
 from contextlib import contextmanager
 
-from sysbio.utils import get_imported_models, copy_files, _default_cfg
+from sysbio.utils import get_imported_models, copy_files, _default_cfg, docker_run_cmd
 
 
 @contextmanager
@@ -48,8 +48,7 @@ def run_simulator(model, _format):
         'm': model,
         'f': _format
     }
-    p = subprocess.Popen(_simulate_cmd.split(), stdout=subprocess.PIPE)
-    out, err = p.communicate()
+    out = docker_run_cmd(_simulate_cmd, 'foo')
     return out.strip()
 
 def run_simulation(model, _format, **kwargs):
@@ -76,7 +75,6 @@ def run_simulation(model, _format, **kwargs):
     d_model_file = '/data/models/%s' % model.split('/')[-1]
     outdir = run_simulator(d_model_file, _format)
 
-
     plot_names = list_plots(d_model_file, _format)
     plot_files = ['%s.txt' % name for name in plot_names]
 
@@ -98,8 +96,7 @@ def list_plots(model, _format):
         'm': model,
         'f': _format
     }
-    p = subprocess.Popen(_list_cmd.split(), stdout=subprocess.PIPE)
-    out, err = p.communicate()
+    out = docker_run_cmd(_list_cmd, 'foo')
     return out.strip().split('\n')
 
 def create_notebook():
@@ -121,9 +118,7 @@ def create_notebook():
         'model': model.split('/')[-1],
         'format': _format,
     }
-
-    p = subprocess.Popen(_create_nb.split(), stdout=subprocess.PIPE)
-    out, err = p.communicate()
+    out = docker_run_cmd(_create_nb, 'foo')
     nbfile = out.strip()
 
     if not model_dir:

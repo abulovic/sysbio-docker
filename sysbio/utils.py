@@ -24,6 +24,14 @@ _default_cfg = '''{
 }
 '''
 
+def docker_run_cmd(run_str, cname):
+
+	p = subprocess.Popen(run_str.split(), stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+	out, err = p.communicate()
+	if err:
+		raise Exception(err)
+	return out
+
 
 def get_covert_parser():
 	p = ArgumentParser()
