@@ -73,6 +73,20 @@ Running the code should give you a plot like this one:
 
 ## Configuration
 
+Once your notebook is created, you have a very basic setup which loads all the necessary modules, runs the simulation of your model and displays all the plots you listed in your configuration.
+Plots you can specify in the configuration file, but the simulation details you can provide either in the configuration file or directly to the `run_simulation` method.
+
+### The `run_simulation` method
+
+    Signature: run_simulation(model, _format, **kwargs)
+
+Apart from the two mandatory arguments, this function can be supplied with a number of arguments for specifying the options of the numerical solver. Since these options will be passed onto the [RoadRunner.simulate](http://sys-bio.github.io/roadrunner/python_docs/api_reference.html#RoadRunner.RoadRunner.simulate) method, they have to have the same name as those listed for the [RoadRunner.simulate](http://sys-bio.github.io/roadrunner/python_docs/api_reference.html#RoadRunner.RoadRunner.simulate) method. For example:
+
+    run_simulation('BIOMD0000000003.txt', 'antimony', start=0, end=450, stiff=True)
+    
+
+### The configuration JSON file
+
 The configuration file supports configuring the numerical integration and plotting. 
 
 The numerical integration setup is easy - it supports whatever is supported by the RoadRunner.simulate](http://sys-bio.github.io/roadrunner/python_docs/api_reference.html#RoadRunner.RoadRunner.simulate) method, except for the `plot` option, which could provide you with an automatically generated plot. Example would be:
