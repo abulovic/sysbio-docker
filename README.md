@@ -56,6 +56,13 @@ The idea of this tool is to give you an interactive IPython notebook though whic
     create-notebook BIOMD0000000003.xml sbml
     ipython notebook
 
+Or alternatively, if your model is in `antimony` format:
+
+    cd ./models
+    create-notebook BIOMD0000000003.txt antimony
+    ipython notebook
+
+
 First command will position you in the directory where the model is located. If you look in that directory, you will notice that there are two files there. One is an `xml` file - the model in the SBML format, and the other is the `cfg` file, which is the configuration file in JSON format. This file has to be in the same directory as the model, and with the same name to be recognized by the simulator. This file enables you to configure the numeric integrator and plotting details. Configuration details are described in the next chapter.
 
 The second command will create an IPython notebook in the same directory, which will have some basic code to run your simulation and to plot the results. With the third command you run the interactive web tool in which you can open the notebook, and run the commands consecutively. 
