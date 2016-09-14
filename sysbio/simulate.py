@@ -1,10 +1,11 @@
 #!/usr/bin/env python
 import os
+import json
 import subprocess
 from argparse import ArgumentParser
 from contextlib import contextmanager
 
-from sysbio.utils import get_imported_models, copy_files
+from sysbio.utils import get_imported_models, copy_files, _default_cfg
 
 
 @contextmanager
@@ -17,6 +18,20 @@ def create_delete(fname, mname, _format):
     yield
     os.remove(fname)
 
+def update_config(cfg_file, kwargs):
+    if not os.path.isfile(cfg_file):
+        with open(cfg_file, 'w') as fout:
+            fout.write(_default_cfg)
+
+    print cfg_file
+    if kwargs:
+        with open(cfg_file) as fin:
+            cfg = json.load(fin)
+        ns_opts = cfg['integration']
+        for key, val in kwargs.iteritems():
+            ns_opts[key] = val
+        with open(cfg_file, 'w') as fout:
+            fout.write(json.dumps(cfg, indent=1))
 
 def get_parser():
     parser = ArgumentParser()
@@ -37,13 +52,24 @@ def run_simulator(model, _format):
     out, err = p.communicate()
     return out.strip()
 
-def run_simulation(model, _format):
+def run_simulation(model, _format, **kwargs):
+    '''Run simulation and return a list of simulation result files.
+
+
+    Arugments:
+    -- model: path to model file
+    -- _format: model specification format: sbml / antimony
+    Method acceps additional named arguments from: 
+    http://sys-bio.github.io/roadrunner/python_docs/api_reference.html#RoadRunner.RoadRunner.simulate
+    '''
     model_dir = '/'.join(model.split('/')[:-1])
     model_name = '.'.join(model.split('/')[-1].split('.')[:-1])
     if model_dir:
         cfg_file = '%s.cfg' % '/'.join([model_dir, model_name])
     else:
         cfg_file = '%s.cfg' % model_name
+
+    update_config(cfg_file, kwargs)
 
     copy_files(model, cfg_file, model_name, _format)
 
